@@ -619,10 +619,7 @@ public class CommandClientImpl implements CommandClient, EventListener
     @Override
     public void onEvent(GenericEvent event)
     {
-        if(event instanceof MessageReceivedEvent)
-            onMessageReceived((MessageReceivedEvent)event);
-
-        else if(event instanceof SlashCommandInteractionEvent)
+        if(event instanceof SlashCommandInteractionEvent)
             onSlashCommand((SlashCommandInteractionEvent)event);
 
         else if(event instanceof MessageContextInteractionEvent)
@@ -726,9 +723,11 @@ public class CommandClientImpl implements CommandClient, EventListener
                     error -> LOG.error("Could not upsert commands! Does the bot have the applications.commands scope?" + error)
                 );
         }
-        else
+        else if (jda.getShardInfo().getShardId() == 0)
+        {
             jda.updateCommands().addCommands(data)
                 .queue(commands -> LOG.debug("Successfully added " + commands.size() + " slash commands!"));
+        }
     }
 
     private void onMessageReceived(MessageReceivedEvent event)
